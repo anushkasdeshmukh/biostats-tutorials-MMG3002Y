@@ -1,0 +1,61 @@
+
+---
+title: "Tutorial 09 – Wilcoxon and Chi-Square Tests"
+author: "Anushka Deshmukh"
+output: html_document
+---
+
+# Overview
+
+This tutorial explores non-parametric statistical methods using R, focusing on the Wilcoxon test and the Chi-square test. These tests are essential tools in genomics where data often violates assumptions of normality or expected frequencies.
+
+---
+
+# Wilcoxon Test – Robustness to Outliers
+
+```{r}
+# Simulated gene expression in two conditions
+set.seed(123)
+groupA <- c(rnorm(15, mean=10, sd=2), 35)  # outlier added
+groupB <- rnorm(16, mean=10, sd=2)
+
+# Visualize
+boxplot(groupA, groupB, names=c("Group A", "Group B"), main="Gene Expression Comparison")
+
+# t-test
+t.test(groupA, groupB)
+
+# Wilcoxon test
+wilcox.test(groupA, groupB)
+
+# Save the boxplot to a PNG file
+png("tutorial09_boxplot.png", width = 800, height = 600)
+boxplot(groupA, groupB, names=c("Group A", "Group B"), main="Gene Expression Comparison")
+dev.off()
+
+```
+
+**Reflection:**  
+This section highlights the impact of outliers on parametric vs nonparametric tests. While the t-test showed a significant difference due to a single outlier, the Wilcoxon test remained robust, supporting its value in noisy biological data.
+
+---
+
+# Chi-Square Test – Expected vs Observed Frequencies
+
+```{r}
+# Observed genotype counts (e.g., AA, AB, BB)
+observed <- c(60, 30, 10)
+expected_proportions <- c(0.25, 0.5, 0.25) * sum(observed)
+
+# Chi-square test
+chisq.test(x = observed, p = expected_proportions, rescale.p = TRUE)
+```
+
+**Reflection:**  
+This Chi-square test simulated genotype distributions against expected Mendelian ratios. This method is a cornerstone of genetic association studies and SNP validation when working with population-level genotype data.
+
+---
+
+# Conclusion
+
+The Wilcoxon and Chi-square tests provide statistically robust approaches in situations where normality assumptions may not hold or categorical frequency comparisons are needed. This tutorial reinforces the need to match statistical method to data structure, particularly in high-variability genomics work.

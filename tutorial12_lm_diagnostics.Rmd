@@ -1,0 +1,79 @@
+
+---
+title: "Tutorial 12 – Linear Model Diagnostics"
+author: "Anushka Deshmukh"
+output: html_document
+---
+
+# Overview
+
+This tutorial explores linear modeling and diagnostic techniques using the `cars` dataset. These approaches are essential for evaluating model assumptions and ensuring robust inference in applied genomics and clinical prediction models.
+
+---
+
+# Fitting the Linear Model
+
+```{r}
+# Base dataset
+data(cars)
+
+# Scatterplot
+plot(cars$speed, cars$dist,
+     main = "Stopping Distance vs Speed",
+     xlab = "Speed (mph)",
+     ylab = "Stopping Distance (ft)",
+     pch = 19, col = "steelblue")
+
+# Linear regression model
+lm_model <- lm(dist ~ speed, data = cars)
+summary(lm_model)
+```
+
+**Reflection:**  
+The linear model output reveals a statistically significant positive association between speed and stopping distance, which is expected. The model explains a reasonable proportion of variance in distance.
+
+---
+
+# Diagnostic Plots
+
+```{r}
+# Diagnostic plots
+par(mfrow=c(2,2))
+plot(lm_model)
+```
+
+**Reflection:**  
+The residual plots highlight minor deviation from normality in Q-Q and slight heteroscedasticity in residuals vs fitted. These are typical in real-world biological data and remind us to always inspect assumptions even for seemingly "clean" datasets.
+
+---
+
+# Alternative: Extract Residuals for Custom Plotting
+
+```{r}
+# Extract residuals
+res <- residuals(lm_model)
+fitted_vals <- fitted(lm_model)
+
+# Save the ggplot residuals vs fitted values
+library(ggplot2)
+
+res_plot <- ggplot(data.frame(fitted_vals, res), aes(x = fitted_vals, y = res)) +
+  geom_point() +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(title = "Residuals vs Fitted Values",
+       x = "Fitted Values",
+       y = "Residuals") +
+  theme_minimal()
+
+ggsave("tutorial12_residuals_plot.png", plot = res_plot, width = 8, height = 5)
+
+```
+
+**Reflection:**  
+Creating custom residual plots with ggplot2 offers more flexibility and cleaner visuals. This approach is often useful in genomics where layered plotting or color stratification is needed to compare multiple outcomes or predictors.
+
+---
+
+# Conclusion
+
+This tutorial reinforced the importance of visually and statistically validating linear models. In genomics and clinical research, careful diagnostics can prevent misinterpretation of association signals or biomarker effects.
